@@ -1,6 +1,6 @@
 module kubesploit
 
-go 1.18
+go 1.23.0
 
 require (
 	github.com/LDCS/qslinux v0.0.0-20160229091100-a234189e8187
@@ -14,10 +14,11 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/traefik/yaegi v0.14.3
 	go.dedis.ch/kyber/v3 v3.0.14
-	golang.org/x/crypto v0.3.0
-	golang.org/x/net v0.2.0
-	golang.org/x/sync v0.1.0
-	golang.org/x/sys v0.2.0
+	golang.org/x/crypto v0.35.0
+	golang.org/x/net v0.36.0
+	golang.org/x/sync v0.11.0
+	golang.org/x/sys v0.30.0
+	gopkg.in/go-jose/go-jose.v2 v2.6.3
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -39,7 +40,7 @@ require (
 	github.com/refraction-networking/utls v0.0.0-20200820030103-33a29038e742 // indirect
 	go.dedis.ch/fixbuf v1.0.3 // indirect
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
-	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/text v0.4.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 )
