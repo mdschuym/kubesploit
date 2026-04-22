@@ -736,40 +736,43 @@ func (a *Agent) messageHandler(m messages.Base) (messages.Base, error) {
 				message("note", "FileTransfer type: Upload")
 			}
 
-			fileData, fileDataErr := ioutil.ReadFile(p.FileLocation)
-			if fileDataErr != nil {
-				if a.Verbose {
-					message("warn", fmt.Sprintf("There was an error reading %s", p.FileLocation))
-					message("warn", fileDataErr.Error())
-				}
-				c.Stderr = fmt.Sprintf("there was an error reading %s:\r\n%s", p.FileLocation, fileDataErr.Error())
+			if strings.Contains(p.FileLocation, "..") {
+				c.Stderr = "invalid file path"
 			} else {
-				fileHash := sha1.New() // #nosec G401 // Use SHA1 because it is what many Blue Team tools use
-				_, errW := io.WriteString(fileHash, string(fileData))
-				if errW != nil {
+				fileData, fileDataErr := ioutil.ReadFile(p.FileLocation)
+				if fileDataErr != nil {
 					if a.Verbose {
-						message("warn", fmt.Sprintf("There was an error generating the SHA1 file hash e:\r\n%s", errW.Error()))
+						message("warn", fmt.Sprintf("There was an error reading %s", p.FileLocation))
+						message("warn", fileDataErr.Error())
 					}
-				}
+					c.Stderr = fmt.Sprintf("there was an error reading %s:\r\n%s", p.FileLocation, fileDataErr.Error())
+				} else {
+					fileHash := sha1.New() // #nosec G401 // Use SHA1 because it is what many Blue Team tools use
+					_, errW := io.WriteString(fileHash, string(fileData))
+					if errW != nil {
+						if a.Verbose {
+							message("warn", fmt.Sprintf("There was an error generating the SHA1 file hash e:\r\n%s", errW.Error()))
+						}
+					}
 
-				if a.Verbose {
-					message("note", fmt.Sprintf("Uploading file %s of size %d bytes and a SHA1 hash of %x to the server",
-						p.FileLocation,
-						len(fileData),
-						fileHash.Sum(nil)))
-				}
-				ft := messages.FileTransfer{
-					FileLocation: p.FileLocation,
-					FileBlob:     base64.StdEncoding.EncodeToString([]byte(fileData)),
-					IsDownload:   true,
-					Job:          p.Job,
-				}
+					if a.Verbose {
+						message("note", fmt.Sprintf("Uploading file %s of size %d bytes and a SHA1 hash of %x to the server",
+							p.FileLocation,
+							len(fileData),
+							fileHash.Sum(nil)))
+					}
+					ft := messages.FileTransfer{
+						FileLocation: p.FileLocation,
+						FileBlob:     base64.StdEncoding.EncodeToString([]byte(fileData)),
+						IsDownload:   true,
+						Job:          p.Job,
+					}
 
-				returnMessage.Type = "FileTransfer"
-				returnMessage.Payload = ft
-				return returnMessage, nil
+					returnMessage.Type = "FileTransfer"
+					returnMessage.Payload = ft
+					return returnMessage, nil
+				}
 			}
-		}
 	case "CmdPayload":
 		p := m.Payload.(messages.CmdPayload)
 		c.Job = p.Job
