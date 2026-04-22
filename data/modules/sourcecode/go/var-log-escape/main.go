@@ -137,14 +137,19 @@ func readDirAndFilter(i_Path string) (string, []string) {
 }
 
 func mkdirAndDownload(i_Path string, i_Query string, i_FileName string) {
-	filePath := filepath.Join(c_DownloadPath, i_FileName)
+	baseClean := filepath.Clean(c_DownloadPath)
+	targetClean := filepath.Clean(filepath.Join(baseClean, i_FileName))
+	rel, err := filepath.Rel(baseClean, targetClean)
+	if err != nil || strings.HasPrefix(rel, "..") || filepath.IsAbs(rel) {
+		log.Fatal(fmt.Errorf("invalid file path"))
+	}
 	g_CountScan = 0
 	if _, err := os.Stat(c_DownloadPath); os.IsNotExist(err) {
 		err = os.MkdirAll(c_DownloadPath, os.FileMode(0766))
 		checkError(err)
 		fmt.Printf("[i] created dir in: %s \n", c_DownloadPath)
 	}
-	downloadByQuery(i_Path, i_Query, filePath)
+	downloadByQuery(i_Path, i_Query, targetClean)
 	fmt.Printf("[+] found %d %s in %s\n", g_CountScan, i_FileName, i_Path)
 	g_CountScan = 0
 }

@@ -825,6 +825,9 @@ func GetMessageForJob(agentID uuid.UUID, job Job) (messages.Base, error) {
 	case "upload":
 		m.Type = "FileTransfer"
 		// TODO add error handling; check 2 args (src, dst)
+		if strings.Contains(job.Args[0], "..") {
+			return m, fmt.Errorf("invalid file path")
+		}
 		uploadFile, uploadFileErr := ioutil.ReadFile(job.Args[0])
 		if uploadFileErr != nil {
 			// TODO send "ServerOK"
