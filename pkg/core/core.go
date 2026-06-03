@@ -29,7 +29,7 @@ import (
 	"time"
 
 	// 3rd Party
-	"gopkg.in/square/go-jose.v2"
+	"gopkg.in/go-jose/go-jose.v2"
 
 	// Merlin
 	"kubesploit/pkg/messages"
